@@ -1,0 +1,798 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta name="google-adsense-account" content="ca-pub-8017852211146660">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Earning Finder</title>
+<meta name="theme-color" content="#047857">
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8017852211146660"
+crossorigin="anonymous"></script>
+<link rel="manifest" href="./manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f0fdf4;color:#18352b}
+header{background:#047857;color:white;text-align:center;padding:22px 12px}
+header h1{margin:0 0 7px;font-size:25px}
+header p{margin:0;font-size:14px}
+nav{display:flex;flex-wrap:wrap;justify-content:center;background:#065f46;padding:7px;gap:5px}
+nav button{background:transparent;color:white;border:0;padding:11px 12px;border-radius:7px;font-weight:bold}
+nav button.active,nav button:hover{background:#10b981}
+main{max-width:850px;margin:18px auto;padding:0 12px}
+.section{display:none}
+.section.active{display:block}
+h2{color:#047857}
+input,select,textarea{width:100%;padding:12px;margin:7px 0;border:1px solid #cbd5d1;border-radius:7px;font-size:15px}
+textarea{min-height:90px}
+button.action{background:#047857;color:white;border:0;padding:11px 15px;border-radius:7px;font-weight:bold;margin:5px 3px;cursor:pointer}
+button.secondary{background:#64748b}
+button.danger{background:#dc2626}
+button:disabled{opacity:.6;cursor:not-allowed}
+.job{background:white;border:1px solid #d1e7dc;border-radius:10px;padding:15px;margin:12px 0;box-shadow:0 2px 6px #0000000a}
+.job h3{margin:0 0 8px;color:#047857}
+.job p{line-height:1.5}
+.category{display:inline-block;background:#d1fae5;color:#065f46;padding:5px 9px;border-radius:20px;font-size:12px}
+a{color:#047857;font-weight:bold}
+.small{font-size:13px;color:#64748b}
+footer{text-align:center;padding:20px;color:#64748b;font-size:13px}
+hr{border:0;border-top:1px solid #d1e7dc;margin:20px 0}
+.status{padding:10px;background:#ecfdf5;border-radius:7px;font-size:13px;margin:10px 0}
+.error{background:#fee2e2;color:#991b1b}
+.about-card{background:white;border:1px solid #d1e7dc;border-radius:10px;padding:15px;margin:12px 0;line-height:1.6}
+.about-card h3{color:#047857;margin-top:0}
+</style>
+</head>
+
+<body>
+<header>
+ <img src="logo.png" alt="Daily Earning Finder Logo"
+style="width:120px;height:120px;object-fit:contain;border-radius:15px;margin-bottom:10px;">
+<h1>Daily Earning Finder</h1>
+<p>Discover online earning opportunities</p>
+</header>
+
+<nav>
+<button class="active" onclick="showSection('jobs',this)">Home</button>
+<button onclick="showSection('favorites',this)">Favourites</button>
+<button onclick="showSection('about',this)">About</button>
+<button onclick="showSection('contact',this)">Contact</button>
+<button onclick="showSection('privacy',this)">Privacy Policy</button>
+<button onclick="showSection('terms',this)">Terms</button>
+<button onclick="showSection('admin',this)">Admin</button>
+<button onclick="shareApp()">Share App</button>
+</nav>
+
+<main>
+
+<section id="jobs" class="section active">
+<h2>Find Earning Opportunities</h2>
+<input id="searchInput" type="search" placeholder="Search opportunities..." oninput="renderJobs()">
+<select id="categoryFilter" onchange="renderJobs()">
+<option value="All">All Categories</option>
+<option>Freelancing</option>
+<option>Dollar Jobs</option>
+<option>Writing</option>
+<option>Design</option>
+<option>Microtasks</option>
+</select>
+<div id="connectionStatus" class="status">Connecting to database...</div>
+<div id="jobList"></div>
+</section>
+
+<section id="favorites" class="section">
+<h2>My Favourite Opportunities</h2>
+<div id="favoriteList"></div>
+</section>
+
+<section id="about" class="section">
+<h2>About Daily Earning Finder</h2>
+
+<div class="about-card">
+<h3>Who We Are</h3>
+<p>Daily Earning Finder helps people discover online earning platforms, freelance marketplaces, remote work and microtask opportunities.</p>
+<p>Our mission is to help beginners explore genuine ways to earn online, including opportunities that may be available to people in Pakistan.</p>
+</div>
+
+<div class="about-card">
+<h3>Our Promise</h3>
+<ul>
+<li>We aim to share genuine platforms and their official website links.</li>
+<li>We encourage visitors to research every platform before joining.</li>
+<li>We do not charge visitors any registration or membership fees.</li>
+<li>We aim to make online earning information easier for beginners to understand.</li>
+</ul>
+</div>
+
+<div class="about-card">
+<h3>Important Safety Rules</h3>
+<ul>
+<li>Never share your password, OTP or banking PIN with anyone.</li>
+<li>Be careful of people promising guaranteed jobs or very high income.</li>
+<li>Do not pay unknown people to get a job or unlock promised earnings.</li>
+<li>Always use the official website of an earning platform.</li>
+<li>Check whether a platform accepts users from your country before registering.</li>
+</ul>
+</div>
+
+<div class="about-card">
+<h3>Disclaimer</h3>
+<p>Daily Earning Finder is an information platform. We are not an employer or a payment service.</p>
+<p>We do not guarantee jobs, tasks, acceptance, payments or income. Earnings depend on your skills, effort, location, eligibility and the availability of work on each platform.</p>
+<p>Third-party websites have their own rules, fees and payment policies. We are not responsible for their services, payments or disputes. Please read their terms carefully before using them.</p>
+<p><strong>Stay safe, research carefully and never pay to get a promised job.</strong></p>
+</div>
+</section>
+
+<section id="contact" class="section">
+<h2>Contact Us</h2>
+<p>For questions or suggestions, contact us by email:</p>
+<p><a href="mailto:dailyearningfinder@gmail.com">dailyearningfinder@gmail.com</a></p>
+</section>
+
+<!-- PRIVACY POLICY -->
+<section id="privacy" class="section">
+<h2>Privacy Policy</h2>
+
+<div class="about-card">
+<h3>1. Introduction</h3>
+<p>Welcome to Daily Earning Finder. We respect your privacy and aim to explain clearly what information is used when you visit our website or app.</p>
+
+<h3>2. Information for Visitors</h3>
+<p>You can browse Daily Earning Finder without creating an account. The app does not ask ordinary visitors to submit their name, email address or phone number.</p>
+
+<h3>3. Favourites and Browser Storage</h3>
+<p>Your favourite opportunities are saved in your browser using local storage on your device. This helps the app remember your saved opportunities when you return.</p>
+<p>Clearing your browser's site data or storage may remove your saved favourites.</p>
+
+<h3>4. Database and Administrator Account</h3>
+<p>We use Supabase to store and display earning opportunity information. Supabase Authentication is used for the administrator's login. Administrator account information is processed by Supabase to provide this service.</p>
+
+<h3>5. Website Hosting</h3>
+<p>This website is hosted using GitHub Pages. GitHub may process technical information when visitors access the website. Please refer to GitHub's own privacy policy for details about its data practices.</p>
+
+<h3>6. Third-Party Websites</h3>
+<p>Our website contains links to external earning platforms and other third-party websites. When you visit those websites, their own privacy policies and terms apply. We do not control how those websites collect or use information.</p>
+
+<h3>7. Children's Privacy</h3>
+<p>Our website is intended for people who are legally permitted to use the linked platforms. Visitors should check the age requirements of each external platform.</p>
+
+<h3>8. Changes to This Policy</h3>
+<p>We may update this Privacy Policy when our website features or practices change. Please check this page occasionally for updates.</p>
+
+<h3>9. Contact Us</h3>
+<p>For privacy questions, contact us at:</p>
+<p><a href="mailto:dailyearningfinder@gmail.com">dailyearningfinder@gmail.com</a></p>
+</div>
+</section>
+
+<!-- TERMS AND CONDITIONS -->
+<section id="terms" class="section">
+<h2>Terms &amp; Conditions</h2>
+
+<div class="about-card">
+<h3>1. Acceptance of Terms</h3>
+<p>By accessing or using Daily Earning Finder, you agree to these Terms &amp; Conditions. If you do not agree, please do not use the website.</p>
+
+<h3>2. Information Only</h3>
+<p>Daily Earning Finder is an information service that shares links and information about online earning opportunities. We are not an employer, recruitment agency or payment service.</p>
+
+<h3>3. No Income Guarantee</h3>
+<p>We do not guarantee jobs, tasks, acceptance, payments or income. Results depend on each platform, your eligibility, skills, location and the availability of work.</p>
+
+<h3>4. Third-Party Platforms</h3>
+<p>Each external platform has its own rules, eligibility requirements, fees and payment policies. You are responsible for reviewing those rules before signing up, applying for work or sharing personal information.</p>
+
+<h3>5. Accuracy of Information</h3>
+<p>We try to provide useful and accurate information, but platform details, links, availability and requirements can change. We cannot guarantee that all information is always complete or up to date.</p>
+
+<h3>6. Safe and Responsible Use</h3>
+<p>You agree not to misuse this website, attempt unauthorized access or interfere with its operation. Never share passwords, OTPs or banking PINs with unknown people.</p>
+
+<h3>7. External Links</h3>
+<p>Links to third-party websites are provided for convenience. We do not own or control those websites and are not responsible for their content, services, payments or disputes.</p>
+
+<h3>8. Changes to These Terms</h3>
+<p>We may update these Terms &amp; Conditions when necessary. Continued use of the website after changes means you accept the updated terms.</p>
+
+<h3>9. Contact</h3>
+<p>For questions about these terms, contact us at:</p>
+<p><a href="mailto:dailyearningfinder@gmail.com">dailyearningfinder@gmail.com</a></p>
+</div>
+</section>
+
+<section id="admin" class="section">
+<h2>Admin Panel</h2>
+
+<div id="adminLogin">
+<p>Login with your registered administrator Gmail and password.</p>
+<input id="adminEmail" type="email" placeholder="Admin Gmail address" autocomplete="username">
+<input id="adminPassword" type="password" placeholder="Admin password" autocomplete="current-password">
+<button class="action" id="loginButton" onclick="adminLogin()">Login</button>
+<div id="loginStatus" class="status">Please log in to manage opportunities.</div>
+</div>
+
+<div id="adminPanel" style="display:none">
+<div class="status" id="adminWelcome">Admin authenticated.</div>
+<button class="action danger" onclick="adminLogout()">Logout</button>
+
+<hr>
+<h3 id="formHeading">Add New Opportunity</h3>
+<input id="jobName" placeholder="Opportunity name">
+<select id="jobCategory">
+<option>Freelancing</option>
+<option>Dollar Jobs</option>
+<option>Writing</option>
+<option>Design</option>
+<option>Microtasks</option>
+</select>
+<textarea id="jobDescription" placeholder="Opportunity description"></textarea>
+<input id="jobLink" type="url" placeholder="Website link (https://...)">
+ <textarea id="countryAvailability" placeholder="Available countries (e.g. Worldwide, Pakistan, India, UAE)"></textarea>
+<button class="action" id="saveButton" onclick="saveJob()">Save Opportunity</button>
+<button class="action secondary" onclick="clearForm()">Clear</button>
+
+<hr>
+<h3>Manage Database Opportunities</h3>
+<p class="small">These opportunities are saved online in your Supabase database.</p>
+<div id="adminJobList"></div>
+</div>
+</section>
+
+</main>
+
+<footer>Daily Earning Finder | Pakistan</footer>
+
+<script>
+// SUPABASE SETTINGS
+const SUPABASE_URL = "https://pzvhuoxiljgqvxoqzeat.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_-0VP2OL4NDjn9nxm8u5sFQ_Ze2MJfCi";
+const ADMIN_USER_ID = "42bfb0ce-614e-4e95-bbf7-355db47b4b16";
+
+let supabaseClient = null;
+let databaseJobs = [];
+let editingId = null;
+let currentUser = null;
+
+if(window.supabase){
+ supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+ );
+}
+
+// DEFAULT OPPORTUNITIES
+const defaultJobs = [
+ {name:"Fiverr",category:"Freelancing",description:"Offer writing, video editing, graphic design and other freelance services to clients.",link:"https://www.fiverr.com"},
+ {name:"Upwork",category:"Dollar Jobs",description:"Find freelance projects and work with international clients.",link:"https://www.upwork.com"},
+ {name:"Freelancer",category:"Freelancing",description:"Explore freelance projects in different categories.",link:"https://www.freelancer.com"},
+ {name:"Clickworker",category:"Microtasks",description:"Explore online microtasks and small digital jobs. Availability varies by country.",link:"https://www.clickworker.com"},
+ {name:"Canva",category:"Design",description:"Create designs and build graphic design skills for freelance work.",link:"https://www.canva.com"},
+ {name:"PeoplePerHour",category:"Freelancing",description:"Find freelance work and offer services to clients.",link:"https://www.peopleperhour.com"},
+ {name:"Guru",category:"Freelancing",description:"Create a freelancer profile and explore available projects.",link:"https://www.guru.com"},
+ {name:"Workana",category:"Freelancing",description:"Explore remote freelance projects and professional services.",link:"https://www.workana.com"},
+ {name:"ProBlogger Jobs",category:"Writing",description:"Explore writing and blogging job listings.",link:"https://problogger.com/jobs"},
+ {name:"99designs",category:"Design",description:"Explore graphic design projects and creative opportunities.",link:"https://99designs.com"}
+];
+
+// KEEP EXISTING LOCAL OPPORTUNITIES
+let localJobs = JSON.parse(localStorage.getItem("myJobs")) || defaultJobs;
+let favorites = JSON.parse(localStorage.getItem("myFavorites")) ||
+                JSON.parse(localStorage.getItem("favorites")) || [];
+
+function saveLocalData(){
+ localStorage.setItem("myJobs",JSON.stringify(localJobs));
+ localStorage.setItem("myFavorites",JSON.stringify(favorites));
+}
+
+// NAVIGATION
+function showSection(id,button){
+ document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ if(button)button.classList.add("active");
+ if(id==="favorites")renderFavorites();
+ if(id==="admin" && currentUser && currentUser.id===ADMIN_USER_ID){
+  renderAdminJobs();
+ }
+}
+// SHARE APP
+async function shareApp(){
+ const shareData = {
+  title: "Daily Earning Finder",
+  text: "Discover online earning opportunities with Daily Earning Finder!",
+  url: window.location.href
+ };
+
+ try {
+  if(navigator.share){
+   await navigator.share(shareData);
+  } else {
+   await navigator.clipboard.writeText(shareData.url);
+   alert("App link copied! Share it with your friends.");
+  }
+ } catch(error) {
+  if(error.name !== "AbortError"){
+   alert("Unable to share. Please copy the app link manually.");
+  }
+ }
+}
+
+
+// COMBINE LOCAL AND DATABASE OPPORTUNITIES
+function allJobs(){
+ const combined=[...localJobs];
+
+ databaseJobs.forEach(dbJob=>{
+  const existingJob=combined.find(j=>
+   j.name.toLowerCase()===String(dbJob.name).toLowerCase()
+  );
+
+  if(existingJob){
+   existingJob.country_availability=dbJob.country_availability;
+  }else{
+   combined.push({
+    name:dbJob.name,
+    category:dbJob.category,
+    description:dbJob.description,
+    link:dbJob.link,
+    country_availability:dbJob.country_availability
+   });
+  }
+ });
+
+ return combined;
+}
+
+// DISPLAY OPPORTUNITIES
+function renderJobs(){
+ const list=document.getElementById("jobList");
+ const search=document.getElementById("searchInput").value.toLowerCase();
+ const category=document.getElementById("categoryFilter").value;
+
+ const filtered=allJobs().filter(job=>{
+  const matchesSearch=(job.name+" "+job.description+" "+job.category).toLowerCase().includes(search);
+  const matchesCategory=category==="All"||job.category===category;
+  return matchesSearch&&matchesCategory;
+ });
+
+ list.innerHTML="";
+ if(filtered.length===0){
+  list.innerHTML="<p>No opportunities found.</p>";
+  return;
+ }
+
+ filtered.forEach(job=>{
+  const isFav=favorites.includes(job.name);
+  const card=document.createElement("div");
+  card.className="job";
+
+  const heading=document.createElement("h3");
+  heading.textContent=job.name;
+
+  const tag=document.createElement("span");
+  tag.className="category";
+  tag.textContent=job.category;
+
+  const desc=document.createElement("p");
+  desc.textContent=job.description;
+const country=document.createElement("p");
+country.textContent="Available countries: "+(job.country_availability||"Not specified");
+country.className="country";
+  const link=document.createElement("a");
+  link.href=job.link;
+  link.target="_blank";
+  link.rel="noopener noreferrer";
+  link.textContent="Visit Website";
+
+  const fav=document.createElement("button");
+  fav.className="action secondary";
+  fav.textContent=isFav?"★ Saved":"☆ Favourite";
+  fav.onclick=()=>toggleFavorite(job.name);
+
+card.append(heading,tag,desc,country,link,document.createElement("br"),fav);
+  list.appendChild(card);
+ });
+}
+// FAVOURITES
+function toggleFavorite(name){
+ if(favorites.includes(name)){
+  favorites=favorites.filter(x=>x!==name);
+ }else{
+  favorites.push(name);
+ }
+ saveLocalData();
+ renderJobs();
+ renderFavorites();
+}
+
+function renderFavorites(){
+ const list=document.getElementById("favoriteList");
+ list.innerHTML="";
+ const favJobs=allJobs().filter(j=>favorites.includes(j.name));
+
+ if(favJobs.length===0){
+  list.innerHTML="<p>You have not saved any favourites yet.</p>";
+  return;
+ }
+
+ favJobs.forEach(job=>{
+  const card=document.createElement("div");
+  card.className="job";
+
+  const h=document.createElement("h3");
+  h.textContent=job.name;
+
+  const p=document.createElement("p");
+  p.textContent=job.description;
+
+  const a=document.createElement("a");
+  a.href=job.link;
+  a.target="_blank";
+  a.rel="noopener noreferrer";
+  a.textContent="Visit Website";
+
+  const btn=document.createElement("button");
+  btn.className="action danger";
+  btn.textContent="Remove Favourite";
+  btn.onclick=()=>toggleFavorite(job.name);
+
+  card.append(h,p,a,document.createElement("br"),btn);
+  list.appendChild(card);
+ });
+}
+
+// UPDATE ADMIN DISPLAY
+function updateAdminDisplay(){
+ const isAdmin=!!currentUser && currentUser.id===ADMIN_USER_ID;
+
+ document.getElementById("adminLogin").style.display=isAdmin?"none":"block";
+ document.getElementById("adminPanel").style.display=isAdmin?"block":"none";
+
+ if(isAdmin){
+  document.getElementById("adminWelcome").textContent=
+   "Logged in as "+currentUser.email;
+  renderAdminJobs();
+ }else{
+  document.getElementById("adminEmail").value="";
+  document.getElementById("adminPassword").value="";
+ }
+}
+
+// ADMIN LOGIN WITH SUPABASE
+async function adminLogin(){
+ if(!supabaseClient){
+  alert("Supabase connection is not available.");
+  return;
+ }
+
+ const email=document.getElementById("adminEmail").value.trim();
+ const password=document.getElementById("adminPassword").value;
+ const status=document.getElementById("loginStatus");
+ const button=document.getElementById("loginButton");
+
+ if(!email||!password){
+  status.textContent="Please enter your Gmail and password.";
+  status.className="status error";
+  return;
+ }
+
+ button.disabled=true;
+ button.textContent="Logging in...";
+ status.textContent="Checking your account...";
+ status.className="status";
+
+ try{
+  const {data,error}=await supabaseClient.auth.signInWithPassword({
+   email:email,
+   password:password
+  });
+
+  if(error)throw error;
+
+  if(!data.user || data.user.id!==ADMIN_USER_ID){
+   await supabaseClient.auth.signOut();
+   currentUser=null;
+   updateAdminDisplay();
+   status.textContent="This account is not authorized as the administrator.";
+   status.className="status error";
+   return;
+  }
+
+  currentUser=data.user;
+  updateAdminDisplay();
+  await loadDatabaseJobs();
+  status.textContent="Admin login successful.";
+  status.className="status";
+ }catch(error){
+  status.textContent="Login failed: "+error.message;
+  status.className="status error";
+ }finally{
+  button.disabled=false;
+  button.textContent="Login";
+ }
+}
+
+// ADMIN LOGOUT
+async function adminLogout(){
+ if(!supabaseClient)return;
+
+ const {error}=await supabaseClient.auth.signOut();
+
+ if(error){
+  alert("Logout failed: "+error.message);
+  return;
+ }
+
+ currentUser=null;
+ clearForm();
+ updateAdminDisplay();
+ document.getElementById("loginStatus").textContent="You have logged out.";
+ document.getElementById("loginStatus").className="status";
+}
+
+// CLEAR ADMIN FORM
+function clearForm(){
+ editingId=null;
+ document.getElementById("jobName").value="";
+ document.getElementById("jobCategory").value="Freelancing";
+ document.getElementById("jobDescription").value="";
+ document.getElementById("jobLink").value="";
+ document.getElementById("countryAvailability").value="";
+ document.getElementById("formHeading").textContent="Add New Opportunity";
+ document.getElementById("saveButton").textContent="Save Opportunity";
+}
+
+// ADD OR EDIT OPPORTUNITY ONLINE
+async function saveJob(){
+ if(!currentUser || currentUser.id!==ADMIN_USER_ID){
+  alert("Please log in with your administrator account.");
+  return;
+ }
+
+ const name=document.getElementById("jobName").value.trim();
+ const category=document.getElementById("jobCategory").value;
+ const description=document.getElementById("jobDescription").value.trim();
+ const link=document.getElementById("jobLink").value.trim();
+ const countryAvailability=document.getElementById("countryAvailability").value.trim();
+
+ if(!name||!description||!link){
+  alert("Please fill in all fields.");
+  return;
+ }
+
+ try{
+  const parsed=new URL(link);
+  if(parsed.protocol!=="https:"&&parsed.protocol!=="http:"){
+   alert("Please enter a valid website link.");
+   return;
+  }
+ }catch(e){
+  alert("Please enter a valid website link starting with https://");
+  return;
+ }
+
+ const duplicate=databaseJobs.some(j=>
+  j.name.toLowerCase()===name.toLowerCase() &&
+  String(j.id)!==String(editingId)
+ );
+
+ if(duplicate){
+  alert("An opportunity with this name already exists in the database.");
+  return;
+ }
+
+ const button=document.getElementById("saveButton");
+ const wasEditing=editingId!==null;
+ const savedEditingId=editingId;
+
+ button.disabled=true;
+ button.textContent="Saving...";
+
+ try{
+ const record={name,category,description,link,country_availability:countryAvailability};
+  let result;
+
+  if(!wasEditing){
+   result=await supabaseClient.from("jobs").insert(record);
+  }else{
+   result=await supabaseClient.from("jobs")
+    .update(record)
+    .eq("id",savedEditingId);
+  }
+
+  if(result.error)throw result.error;
+
+  const oldJob=databaseJobs.find(j=>String(j.id)===String(savedEditingId));
+  if(oldJob && oldJob.name!==name){
+   favorites=favorites.map(f=>f===oldJob.name?name:f);
+   saveLocalData();
+  }
+
+  clearForm();
+  await loadDatabaseJobs();
+  renderFavorites();
+
+  alert(wasEditing?
+   "Opportunity updated successfully online!":
+   "Opportunity added successfully online!");
+
+ }catch(error){
+  console.error(error);
+  alert("Could not save opportunity: "+error.message);
+ }finally{
+  button.disabled=false;
+  button.textContent="Save Opportunity";
+ }
+}
+
+// ADMIN DATABASE LIST
+function renderAdminJobs(){
+ const list=document.getElementById("adminJobList");
+ list.innerHTML="";
+
+ if(databaseJobs.length===0){
+  list.innerHTML="<p>No database opportunities found.</p>";
+  return;
+ }
+
+ databaseJobs.forEach(job=>{
+  const card=document.createElement("div");
+  card.className="job";
+
+  const h=document.createElement("h3");
+  h.textContent=job.name;
+
+  const p=document.createElement("p");
+  p.textContent=job.category;
+
+  const edit=document.createElement("button");
+  edit.className="action";
+  edit.textContent="Edit";
+  edit.onclick=()=>editJob(job.id);
+
+  const del=document.createElement("button");
+  del.className="action danger";
+  del.textContent="Delete";
+  del.onclick=()=>deleteJob(job.id);
+
+  card.append(h,p,edit,del);
+  list.appendChild(card);
+ });
+}
+
+// EDIT DATABASE OPPORTUNITY
+function editJob(id){
+ const job=databaseJobs.find(j=>String(j.id)===String(id));
+ if(!job)return;
+
+ editingId=job.id;
+ document.getElementById("jobName").value=job.name;
+ document.getElementById("jobCategory").value=job.category;
+ document.getElementById("jobDescription").value=job.description;
+ document.getElementById("jobLink").value=job.link;
+ document.getElementById("countryAvailability").value=job.country_availability||"";
+ document.getElementById("formHeading").textContent="Edit Opportunity";
+ document.getElementById("saveButton").textContent="Update Opportunity";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// DELETE DATABASE OPPORTUNITY
+async function deleteJob(id){
+ const job=databaseJobs.find(j=>String(j.id)===String(id));
+ if(!job)return;
+
+ if(!confirm("Are you sure you want to delete "+job.name+" from the online database?"))return;
+
+ try{
+  const {error}=await supabaseClient
+   .from("jobs")
+   .delete()
+   .eq("id",id);
+
+  if(error)throw error;
+
+  favorites=favorites.filter(f=>f!==job.name);
+  saveLocalData();
+
+  alert("Opportunity deleted from the online database.");
+  clearForm();
+  await loadDatabaseJobs();
+  renderFavorites();
+
+ }catch(error){
+  console.error(error);
+  alert("Could not delete opportunity: "+error.message);
+ }
+}
+
+// LOAD DATABASE OPPORTUNITIES
+async function loadDatabaseJobs(){
+ const status=document.getElementById("connectionStatus");
+
+ if(!supabaseClient){
+  status.textContent="Supabase could not connect. Check your internet and settings.";
+  status.className="status error";
+  renderJobs();
+  return;
+ }
+
+ try{
+  const {data,error}=await supabaseClient
+   .from("jobs")
+   .select("id,name,category,description,link,country_availability")
+   .order("id",{ascending:true});
+
+  if(error)throw error;
+
+  databaseJobs=data||[];
+  status.textContent="Supabase connected. Database records: "+databaseJobs.length+" | Total opportunities: "+allJobs().length;
+  status.className="status";
+
+  renderJobs();
+  renderFavorites();
+
+  if(currentUser && currentUser.id===ADMIN_USER_ID){
+   renderAdminJobs();
+  }
+
+ }catch(error){
+  console.error("Supabase error:",error);
+  status.textContent="Could not load database opportunities: "+error.message;
+  status.className="status error";
+  renderJobs();
+ }
+}
+
+// CHECK EXISTING LOGIN SESSION
+async function checkAdminSession(){
+ if(!supabaseClient)return;
+
+ try{
+  const {data,error}=await supabaseClient.auth.getSession();
+  if(error)throw error;
+
+  const user=data.session?.user;
+
+  if(user && user.id===ADMIN_USER_ID){
+   currentUser=user;
+  }else{
+   currentUser=null;
+   if(user){
+    await supabaseClient.auth.signOut();
+   }
+  }
+
+  updateAdminDisplay();
+ }catch(error){
+  console.error("Session error:",error);
+ }
+}
+
+// START APP
+renderJobs();
+renderFavorites();
+
+if(supabaseClient){
+ checkAdminSession();
+ loadDatabaseJobs();
+
+ supabaseClient.auth.onAuthStateChange((event,session)=>{
+  if(event==="SIGNED_OUT"){
+   currentUser=null;
+   updateAdminDisplay();
+  }
+ });
+}
+
+if("serviceWorker" in navigator){
+ window.addEventListener("load",()=>{
+  navigator.serviceWorker.register("./service-worker.js")
+   .catch(error=>console.log("Service worker:",error));
+ });
+}
+</script>
+</body>
+</html>
